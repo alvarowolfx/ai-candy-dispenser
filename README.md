@@ -43,10 +43,10 @@ Setup and Build
 To setup, follow these steps below.
 
 * Add a valid Google Cloud Vision API key in the constant `CloudVisionUtils.CLOUD_VISION_API_KEY`
- 1. Create a Google Cloud Platform (GCP) project on [GCP Console](https://console.cloud.google.com/)
- 2. Enable Cloud Vision API under Library
- 3. Add an API key under Credentials
- 4. Copy and paste the Cloud Vision API key to the constant in `ImageClassifierUtil.kt`
+    * Create a Google Cloud Platform (GCP) project on [GCP Console](https://console.cloud.google.com/)
+    * Enable Cloud Vision API under Library
+    * Add an API key under Credentials
+    * Copy and paste the Cloud Vision API key to the constant in `ImageClassifierUtil.kt`
 
 Running
 =======
@@ -55,7 +55,7 @@ To run the `app` module on an Android Things board:
 
 1. Connect a push button to your device's GPIO pin according to the schematics below
 2. Deploy and run the `app` module
- - Reboot the Android Things board in order to grant the camera permission (this is a known
+    * Reboot the Android Things board in order to grant the camera permission (this is a known
    issue with Developer Preview )
 3. Press the button to start the game and see what it asks.
 4. Search for a photo and press the button to take a picture for it.
