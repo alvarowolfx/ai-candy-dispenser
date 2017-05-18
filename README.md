@@ -27,6 +27,7 @@ Pre-requisites
     - 1 resistor
     - 1 electric candy machine
     - 1 NPN transistor
+    - 1 diode
     - 1 Serial i2c 20x4 Display
     - jumper wires
     - 1 breadboard
@@ -34,7 +35,7 @@ Pre-requisites
 Schematics
 ----------
 
-- Coming soon
+![Schematic.png](Schematic.png)
 
 Setup and Build
 ===============
@@ -63,3 +64,4 @@ To run the `app` module on an Android Things board:
 # References
 
 - https://github.com/androidthings/doorbell
+- https://github.com/androidthings/sample-tensorflow-imageclassifier
