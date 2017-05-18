@@ -1,4 +1,4 @@
-package br.com.aviebrantz.candyvisiondispenser
+package br.com.aviebrantz.aicandydispenser
 
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.json.gson.GsonFactory

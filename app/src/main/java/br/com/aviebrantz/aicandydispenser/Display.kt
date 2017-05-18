@@ -1,4 +1,4 @@
-package br.com.aviebrantz.candyvisiondispenser
+package br.com.aviebrantz.aicandydispenser
 
 import nz.geek.android.things.drivers.lcd.I2cSerialCharLcd
 

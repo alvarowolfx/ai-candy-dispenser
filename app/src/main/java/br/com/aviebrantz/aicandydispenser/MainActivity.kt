@@ -1,4 +1,4 @@
-package br.com.aviebrantz.candyvisiondispenser
+package br.com.aviebrantz.aicandydispenser
 
 import android.app.Activity
 import android.content.ContentValues.TAG
@@ -11,7 +11,7 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
-import br.com.aviebrantz.candyvisiondispenser.MainActivity.GameState.*
+import br.com.aviebrantz.aicandydispenser.MainActivity.GameState.*
 import com.google.android.things.contrib.driver.button.Button
 import java.io.ByteArrayOutputStream
 

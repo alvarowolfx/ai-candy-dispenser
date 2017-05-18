@@ -1,4 +1,4 @@
-package br.com.aviebrantz.candyvisiondispenser;
+package br.com.aviebrantz.aicandydispenser;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

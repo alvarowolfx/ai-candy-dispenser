@@ -1,4 +1,4 @@
-package br.com.aviebrantz.candyvisiondispenser
+package br.com.aviebrantz.aicandydispenser
 
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -8,13 +8,9 @@ import android.os.Handler
 import android.util.Log
 import android.graphics.ImageFormat
 import android.hardware.camera2.*
-import android.hardware.camera2.CameraDevice.StateCallback
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.params.StreamConfigurationMap
-import android.content.Context.CAMERA_SERVICE
 import android.hardware.camera2.CameraManager
-import android.view.Surface
 
 
 /**

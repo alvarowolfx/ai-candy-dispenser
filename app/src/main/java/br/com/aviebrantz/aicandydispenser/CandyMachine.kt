@@ -1,4 +1,4 @@
-package br.com.aviebrantz.candyvisiondispenser
+package br.com.aviebrantz.aicandydispenser
 
 import android.os.CountDownTimer
 import com.google.android.things.pio.Gpio
