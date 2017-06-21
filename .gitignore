@@ -53,3 +53,8 @@ google-services.json
 freeline.py
 freeline/
 freeline_project_description.json
+
+# Tensorflow files
+/assets
+/app/assets/imagenet_comp_graph_label_strings.txt
+/app/assets/tensorflow_inception_graph.pb
