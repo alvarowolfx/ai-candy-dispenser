@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'de.undercouch.download'
 
 android {
     compileSdkVersion 25
@@ -18,6 +19,31 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        main {
+            assets.srcDirs = ['./assets']
+        }
+    }
+}
+
+// Download model zip file into ../../assets directory
+// unzip it to demo project's own ./assets directory
+import de.undercouch.gradle.tasks.download.Download
+task downloadFile(type: Download) {
+    src 'https://storage.googleapis.com/download.tensorflow.org/models/inception5h.zip'
+    dest projectDir.toString() + '/../assets/inception.zip'
+}
+task unzip(type: Copy) {
+    from zipTree(projectDir.toString() + '/../assets/inception.zip')
+    into file(projectDir.toString() + '/assets')
+}
+unzip.dependsOn downloadFile
+
+project.afterEvaluate {
+    if (!(new File(projectDir.toString() + '/assets')).exists()) {
+        preBuild.dependsOn unzip
+    }
 }
 
 dependencies {
@@ -30,7 +56,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
-    provided 'com.google.android.things:androidthings:0.3-devpreview'
+    provided 'com.google.android.things:androidthings:0.4-devpreview'
     compile 'com.google.android.things.contrib:driver-button:0.2'
     //compile 'com.google.firebase:firebase-database:10.2.1'
     //compile 'com.google.firebase:firebase-analytics:10.2.1'
@@ -41,6 +67,8 @@ dependencies {
     compile 'com.google.http-client:google-http-client-gson:1.22.0' exclude module: 'httpclient'
 
     compile 'com.google.apis:google-api-services-vision:v1-rev22-1.22.0'
+
+    compile 'org.tensorflow:tensorflow-android:1.2.0-preview'
 }
 repositories {
     mavenCentral()

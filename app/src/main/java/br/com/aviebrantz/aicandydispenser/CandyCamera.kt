@@ -18,11 +18,6 @@ import android.hardware.camera2.CameraManager
  */
 class CandyCamera: AutoCloseable{
 
-    // Camera image parameters (device-specific)
-    private val IMAGE_WIDTH  = 320
-    private val IMAGE_HEIGHT = 240
-    private val MAX_IMAGES   = 1
-
     // Image result processor
     private var mImageReader: ImageReader? = null
     // Active camera device connection
@@ -31,6 +26,10 @@ class CandyCamera: AutoCloseable{
     private var mCaptureSession: CameraCaptureSession? = null
 
     companion object InstanceHolder {
+        // Camera image parameters (device-specific)
+        val IMAGE_WIDTH  = 320
+        val IMAGE_HEIGHT = 240
+        val MAX_IMAGES   = 1
         val mCamera = CandyCamera()
 
         fun getInstance(): CandyCamera {

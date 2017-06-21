@@ -2,6 +2,7 @@ package br.com.aviebrantz.aicandydispenser
 
 import android.app.Activity
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -12,6 +13,8 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
 import br.com.aviebrantz.aicandydispenser.MainActivity.GameState.*
+import br.com.aviebrantz.aicandydispenser.imageclassifier.ImageClassifierService
+import br.com.aviebrantz.aicandydispenser.imageclassifier.TensorflowImageClassifierService
 import com.google.android.things.contrib.driver.button.Button
 import java.io.ByteArrayOutputStream
 
@@ -35,11 +38,12 @@ class MainActivity : Activity() {
 
     private val LABELS = listOf(
             "DOG","CAT","FISH","SHEEP",
-            "GIRAFFE","BEE","LION","PENGUIN",
-            "BIRD", "FOOD", "LAPTOP",
-            "TREE","FLOWER", "RABBIT")
+            "CAR","AIRPLANE", "LAPTOP",
+            "COW","BEE","LION","PENGUIN",
+            "BIRD", "RABBIT", "ELEPHANT",
+            "FOOD", "FLOWER")
 
-    private val DEFAULT_TIMEOUT = 20*1000L
+    private val DEFAULT_TIMEOUT = 30*1000L
     private var mCurrentLabel = ""
     private var mWonCurrentGame = false
     private var mRemainingMillis = 0L
@@ -52,6 +56,8 @@ class MainActivity : Activity() {
 
     private lateinit var mClassifyHandler: Handler
     private lateinit var mClassifyThread: HandlerThread
+
+    private lateinit var mImageClassifierService: ImageClassifierService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +81,8 @@ class MainActivity : Activity() {
         mClassifyThread= HandlerThread("ClassifyThread")
         mClassifyThread.start()
         mClassifyHandler = Handler(mClassifyThread.looper)
+
+        mImageClassifierService = TensorflowImageClassifierService(this)
 
         updateGameState(WAITING_PLAYER)
     }
@@ -196,16 +204,18 @@ class MainActivity : Activity() {
         mClassifyHandler.post({
             Log.d(TAG, "sending image to cloud vision")
             try {
-                mAnnotations = ImageClassifierUtil.annotateImage(rotatedImageBytes)
+                mAnnotations = mImageClassifierService.annotateImage(rotatedImageBytes)
 
-                Log.d(TAG, "finished image analyses at cloud vision")
+                Log.d(TAG, "finished image analyses")
 
                 for ((desc, value) in mAnnotations) {
                     Log.d(TAG, "$desc - $value")
                 }
 
             }catch(e: Exception){
-                mAnnotations = mapOf<String, Float>()
+                Log.d(TAG, e.message)
+                mAnnotations = hashMapOf<String, Float>()
+                        .plus(Pair(e.message!!, 0.0f))
             }finally {
                 if(checkIfWon()){
                     updateGameState(WAITING_RECLAIM_PRIZE)
