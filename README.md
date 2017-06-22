@@ -42,7 +42,7 @@ Setup and Build
 
 To setup, follow these steps below.
 
-* Add a valid Google Cloud Vision API key in the constant `CloudVisionUtils.CLOUD_VISION_API_KEY`
+* Add a valid Google Cloud Vision API key in the constant `ImageClassifierUtil.CLOUD_VISION_API_KEY`
     * Create a Google Cloud Platform (GCP) project on [GCP Console](https://console.cloud.google.com/)
     * Enable Cloud Vision API under Library
     * Add an API key under Credentials
