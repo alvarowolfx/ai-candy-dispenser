@@ -27,8 +27,8 @@ class CandyCamera: AutoCloseable{
 
     companion object InstanceHolder {
         // Camera image parameters (device-specific)
-        val IMAGE_WIDTH  = 320
-        val IMAGE_HEIGHT = 240
+        val IMAGE_WIDTH  = 640
+        val IMAGE_HEIGHT = 480
         val MAX_IMAGES   = 1
         val mCamera = CandyCamera()
 
@@ -46,7 +46,7 @@ class CandyCamera: AutoCloseable{
         } catch (e: CameraAccessException) {
             Log.d(TAG, "Cam access exception gettings ids", e)
         }
-        if(camIds.size < 1){
+        if(camIds.isEmpty()){
             Log.d(TAG, "No cameras found")
             return
         }

@@ -52,4 +52,5 @@ class Display(i2cBus: String): AutoCloseable{
     override fun close() {
         mLcd.disconnect()
     }
+
 }

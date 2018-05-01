@@ -2,7 +2,7 @@ package br.com.aviebrantz.aicandydispenser
 
 import android.os.CountDownTimer
 import com.google.android.things.pio.Gpio
-import com.google.android.things.pio.PeripheralManagerService
+import com.google.android.things.pio.PeripheralManager
 
 /**
  * Created by alvaroviebrantz on 07/05/17.
@@ -14,10 +14,10 @@ class CandyMachine(gpio: String): AutoCloseable{
     private var mCandiesTimer: CountDownTimer? = null
 
     init{
-        val service = PeripheralManagerService()
+        val service = PeripheralManager.getInstance()
         mCandyPin = service.openGpio(gpio)
-        mCandyPin?.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW)
-        mCandyPin?.setActiveType(Gpio.ACTIVE_HIGH)
+        mCandyPin?.setDirection(Gpio.DIRECTION_OUT_INITIALLY_HIGH)
+        mCandyPin?.setActiveType(Gpio.ACTIVE_LOW)
     }
 
     fun giveCandies() {

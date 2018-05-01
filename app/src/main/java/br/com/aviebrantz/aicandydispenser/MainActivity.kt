@@ -35,10 +35,14 @@ class MainActivity : Activity() {
     private val LED_STRIP_BUS = "SPI0.0"
 
     private val LABELS = listOf(
-            "DOG","CAT","FISH","SHEEP",
-            "CAR",
-            ///"AIRPLANE", "LAPTOP",
-            "COW","BEE","LION","PENGUIN",
+            "DOG","CAT","FISH",
+            "CAR", "FROG","BEAR",
+            "ANT", "ZEBRA","MONKEY",
+            "PINEAPPLE", "BANANA",
+            "ORANGE", "STRAWBERRY",
+            //"AIRPLANE", "LAPTOP",
+            //"COW","SHEEP",
+            "BEE","LION","PENGUIN",
             "BIRD", "RABBIT", "ELEPHANT",
             //"FOOD",
             "FLOWER")
@@ -68,7 +72,7 @@ class MainActivity : Activity() {
         mButton?.setOnButtonEventListener(mButtonEventListener)
         mCandyMachine = CandyMachine(CANDY_PIN)
 
-        sortLabel()
+        raffleLabel()
 
         mCameraThread = HandlerThread("CameraBackgroundThread")
         mCameraThread.start()
@@ -104,8 +108,8 @@ class MainActivity : Activity() {
             }
             WAITING_PHOTO -> {
                 mLedStrip.setMode(LedStrip.LedMode.WAITING_PHOTO)
-                mAnnotations = mapOf<String, Float>()
-                sortLabel()
+                mAnnotations = mapOf()
+                raffleLabel()
                 startCountdown()
                 startAnalyzing()
             }
@@ -120,7 +124,9 @@ class MainActivity : Activity() {
         }
         mGameState = nextGameState
         mDisplay?.clear()
-        renderGameState()
+        runOnUiThread {
+            renderGameState()
+        }
     }
 
     private fun startAnalyzing() {
@@ -128,48 +134,47 @@ class MainActivity : Activity() {
     }
 
     private fun renderGameState() {
-        synchronized(this) {
-            when (mGameState) {
-                WAITING_TENSORFLOW -> {
-                    mDisplay?.print(1, "A.I. Candy Dispenser")
-                    mDisplay?.printCenter(2, "")
-                    mDisplay?.printCenter(3, "Creating time-loop")
-                    mDisplay?.printCenter(4, "inversion field")
-                }
-                WAITING_PLAYER -> {
-                    mDisplay?.print(1, "A.I. Candy Dispenser")
-                    mDisplay?.printCenter(2, "")
-                    mDisplay?.printCenter(3, "Press the Button")
-                    mDisplay?.printCenter(4, "To start")
-                }
-                WAITING_PHOTO -> {
-                    mDisplay?.printCenter(1, "Show a $mCurrentLabel")
-                    val secs = "${(mRemainingMillis / 1000)} seconds"
-                    mDisplay?.printCenter(2, secs)
+        when (mGameState) {
+            WAITING_TENSORFLOW -> {
+                mDisplay?.print(1, "A.I. Candy Dispenser")
+                mDisplay?.printCenter(2, "")
+                mDisplay?.printCenter(3, "Creating time-loop")
+                mDisplay?.printCenter(4, "inversion field")
+            }
+            WAITING_PLAYER -> {
+                mDisplay?.print(1, "A.I. Candy Dispenser")
+                mDisplay?.printCenter(2, "")
+                mDisplay?.printCenter(3, "Press the Button")
+                mDisplay?.printCenter(4, "To start")
+            }
+            WAITING_PHOTO -> {
+                mDisplay?.printCenter(1, "Show a $mCurrentLabel")
+                val secs = "${(mRemainingMillis / 1000)} seconds"
+                mDisplay?.printCenter(2, secs)
 
-                    if (mAnnotations.size == 0) {
-                        mDisplay?.printCenter(4, "Not found yet")
-                    } else {
-                        val desc = mAnnotations.keys.first()
-                        mDisplay?.printCenter(4, "$desc found")
-                    }
-                }
-                WAITING_RECLAIM_PRIZE -> {
-                    val secs = "${(mRemainingMillis / 1000)} seconds to claim"
-                    mDisplay?.printCenter(1, "AEHOOO, You Won")
-                    mDisplay?.printCenter(2, mCurrentLabel + " found")
-                    mDisplay?.printCenter(4, secs)
-                }
-                TIMEOUT -> {
-                    mDisplay?.printCenter(1, "Time's up :(")
-                    mDisplay?.printCenter(3, mCurrentLabel + " not found")
+                if (mAnnotations.isEmpty()) {
+                    mDisplay?.printCenter(4, "Not found yet")
+                } else {
+                    val desc = mAnnotations.keys.first()
+                    mDisplay?.printCenter(4, "$desc found")
                 }
             }
+            WAITING_RECLAIM_PRIZE -> {
+                val secs = "${(mRemainingMillis / 1000)} seconds to claim"
+                mDisplay?.printCenter(1, "AEHOOO, You Won")
+                mDisplay?.printCenter(2, "$mCurrentLabel found")
+                mDisplay?.printCenter(4, secs)
+            }
+            TIMEOUT -> {
+                mDisplay?.printCenter(1, "Time's up :(")
+                mDisplay?.printCenter(3, "$mCurrentLabel not found")
+            }
         }
+
     }
 
-    val mButtonEventListener = { _: Button, pressed: Boolean ->
-        Log.d(TAG, "Button is pressed: " + pressed)
+    private val mButtonEventListener = { _: Button, pressed: Boolean ->
+        Log.d(TAG, "Button is pressed: $pressed")
         if(pressed){
             when(mGameState){
                 WAITING_PLAYER -> {
@@ -177,6 +182,7 @@ class MainActivity : Activity() {
                 }
                 WAITING_RECLAIM_PRIZE -> {
                     mCandyMachine?.giveCandies()
+                    mTimer?.cancel()
                     updateGameState(WAITING_PLAYER)
                 }
                 WAITING_TENSORFLOW, WAITING_PHOTO, TIMEOUT -> {
@@ -186,35 +192,22 @@ class MainActivity : Activity() {
         }
     }
 
-    val mOnImageAvailableListener = ImageReader.OnImageAvailableListener { reader ->
-        val image = reader.acquireLatestImage()
-        val imageBuffer = image.planes[0].buffer
-        val imageBytes = ByteArray(imageBuffer.remaining())
-        imageBuffer.get(imageBytes)
-        image.close()
+    private val mOnImageAvailableListener = ImageReader.OnImageAvailableListener { reader ->
+        try {
+            val image = reader.acquireLatestImage()
+            val imageBuffer = image.planes[0].buffer
+            val imageBytes = ByteArray(imageBuffer.remaining())
+            imageBuffer.get(imageBytes)
+            image.close()
 
-        onPictureTaken(imageBytes)
+            onPictureTaken(imageBytes)
+        } catch(e: Exception){
+            Log.d(TAG, e.message)
+        }
     }
 
     private fun onPictureTaken(imageBytes: ByteArray){
         Log.d(TAG, "Picture Taken with " + imageBytes.size)
-        /* DON'T ROTATE ANYMORE
-        val bitmap = BitmapFactory.decodeByteArray(imageBytes,0,imageBytes.size)
-        val matrix = Matrix()
-        matrix.postRotate(180f)
-
-        val rotatedBitmap = Bitmap.createBitmap(bitmap, 0,0, bitmap.width, bitmap.height, matrix,true)
-        /*
-        DEBUG - Save to file
-        val out = this.openFileOutput("test.jpeg", Context.MODE_PRIVATE)
-        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
-        out.close()
-        */
-
-        val stream = ByteArrayOutputStream()
-        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-        val rotatedImageBytes = stream.toByteArray()
-        */
 
         mClassifyHandler.post({
             Log.d(TAG, "sending image to cloud vision")
@@ -229,6 +222,7 @@ class MainActivity : Activity() {
 
             }catch(e: Exception){
                 Log.d(TAG, e.message)
+                e.printStackTrace()
                 mAnnotations = hashMapOf<String, Float>()
                         .plus(Pair(e.message!!, 0.0f))
             }finally {
@@ -292,7 +286,7 @@ class MainActivity : Activity() {
         mTimer?.start()
     }
 
-    fun sortLabel(){
+    private fun raffleLabel(){
         var newLabel:String
         do {
             val idx = (Math.random() * LABELS.size).toInt()

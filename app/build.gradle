@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'de.undercouch.download'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    compileSdkVersion 27
+
     defaultConfig {
         applicationId "br.com.aviebrantz.aicandydispenser"
-        minSdkVersion 24
-        targetSdkVersion 25
+        minSdkVersion 27
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -25,17 +25,21 @@ android {
             assets.srcDirs = ['./assets']
         }
     }
+
+    aaptOptions {
+        noCompress "tflite"
+    }
 }
 
 // Download model zip file into ../../assets directory
 // unzip it to demo project's own ./assets directory
 import de.undercouch.gradle.tasks.download.Download
 task downloadFile(type: Download) {
-    src 'https://storage.googleapis.com/download.tensorflow.org/models/inception5h.zip'
-    dest projectDir.toString() + '/../assets/inception.zip'
+    src 'http://download.tensorflow.org/models/mobilenet_v1_2018_02_22/mobilenet_v1_1.0_224_quant.tgz'
+    dest projectDir.toString() + '/../assets/mobilenet.zip'
 }
 task unzip(type: Copy) {
-    from zipTree(projectDir.toString() + '/../assets/inception.zip')
+    from zipTree(projectDir.toString() + '/../assets/mobilenet.zip')
     into file(projectDir.toString() + '/assets')
 }
 unzip.dependsOn downloadFile
@@ -56,22 +60,22 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
-    provided 'com.google.android.things:androidthings:0.4-devpreview'
-    compile 'com.google.android.things.contrib:driver-button:0.2'
-    compile 'com.google.android.things.contrib:driver-apa102:0.5'
+    provided 'com.google.android.things:androidthings:0.8-devpreview'
+    compile 'com.google.android.things.contrib:driver-button:0.7'
+    compile 'com.google.android.things.contrib:driver-apa102:0.6'
 
     //compile 'com.google.firebase:firebase-database:10.2.1'
     //compile 'com.google.firebase:firebase-analytics:10.2.1'
     //compile 'org.altbeacon:android-beacon-library:2+'
-    compile 'nz.geek.android.things:things-drivers:1.2.4'
+    compile 'nz.geek.android.things:things-drivers:1.8.0'
 
     compile 'com.google.api-client:google-api-client-android:1.22.0' exclude module: 'httpclient'
     compile 'com.google.http-client:google-http-client-gson:1.22.0' exclude module: 'httpclient'
 
     compile 'com.google.apis:google-api-services-vision:v1-rev22-1.22.0'
 
-    compile 'org.tensorflow:tensorflow-android:1.2.0-preview'
+    compile 'org.tensorflow:tensorflow-lite:0.1.1'
 }
 repositories {
-    mavenCentral()
+    jcenter()
 }
