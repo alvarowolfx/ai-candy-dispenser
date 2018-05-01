@@ -7,8 +7,8 @@ and the user should show a photo of that thing in the predefined time to win can
 This project uses a button to interact with the user, obtains images via a camera peripheral and 
 a modified electric candy dispenser being controlled by a GPIO with a transistor. 
 
-When the user takes a picture, it processes the image data using Google’s Cloud Vision API, 
-which returns annotations and metadata of the image. This info is used by the device to see 
+When the user start the game, the device takes pictures in sequence and processes each one using Tensorflow and MobileNet neural network,
+which classifies each image. This info is used by the device to see
 if it matches what it requested. When we have a match, the motor of the candy machine is activated 
 to give the user the prize.
 
@@ -19,9 +19,8 @@ Pre-requisites
 
 - Android Things compatible board
 - Android Things compatible camera (for example, the Raspberry Pi 3 camera module)
-- Android Studio 2.2+
+- Android Studio 3.1+
 - "Google Repository" from the Android SDK Manager
-- Google Cloud project with Cloud Vision API enabled
 - The following individual components:
     - 1 push button
     - 1 resistor
@@ -37,17 +36,6 @@ Schematics
 
 ![Schematic.png](Schematic.png)
 
-Setup and Build
-===============
-
-To setup, follow these steps below.
-
-* Add a valid Google Cloud Vision API key in the constant `ImageClassifierUtil.CLOUD_VISION_API_KEY`
-    * Create a Google Cloud Platform (GCP) project on [GCP Console](https://console.cloud.google.com/)
-    * Enable Cloud Vision API under Library
-    * Add an API key under Credentials
-    * Copy and paste the Cloud Vision API key to the constant in `ImageClassifierUtil.kt`
-
 Running
 =======
 
@@ -58,7 +46,7 @@ To run the `app` module on an Android Things board:
     * Reboot the Android Things board in order to grant the camera permission (this is a known
    issue with Developer Preview )
 3. Press the button to start the game and see what it asks.
-4. Search for a photo and press the button to take a picture for it.
+4. Search for a photo and show to the camera.
 5. Wait for the results, if it succeeds it will ask you to press the button to release the candies.
 
 # References
