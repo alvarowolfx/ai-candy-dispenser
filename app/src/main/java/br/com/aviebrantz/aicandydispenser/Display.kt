@@ -1,6 +1,7 @@
 package br.com.aviebrantz.aicandydispenser
 
-import nz.geek.android.things.drivers.lcd.I2cSerialCharLcd
+import nz.geek.android.things.driver.display.CharacterDisplay
+import nz.geek.android.things.driver.display.I2cLcdCharacterDisplay
 
 /**
  * Created by alvaroviebrantz on 07/05/17.
@@ -9,10 +10,10 @@ class Display(i2cBus: String): AutoCloseable{
 
     private val LCD_WIDTH = 20
     private val LCD_HEIGHT = 4
-    private val mLcd: I2cSerialCharLcd
+    private val mLcd: CharacterDisplay
 
     init{
-        val builder = I2cSerialCharLcd.builder(LCD_WIDTH, LCD_HEIGHT)
+        val builder = I2cLcdCharacterDisplay.builder(LCD_WIDTH, LCD_HEIGHT)
                 .rs(0)
                 .rw(1)
                 .e(2)
